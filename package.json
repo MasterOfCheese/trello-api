@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "express": "4.18.2",
+    "mongodb": "^6.8.0"
+  },
+  "name": "trello-api",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "namphuongdev",
+  "main": "src/server.js",
+  "author": "namphuongdev",
+  "license": "MIT",
+  "private": true
+}
