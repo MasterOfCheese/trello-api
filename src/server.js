@@ -1,27 +1,49 @@
+/* eslint-disable no-console */
 import express from 'express'
-import { mapOrder } from '~/utils/sorts.js'
+import exitHook from 'async-exit-hook'
+import { CONNECT_DB, CLOSE_DB } from '~/config/mongodb'
+import { env } from '~/config/environment'
 
 const app = express()
 
-const hostname = 'localhost'
-const port = 8017
+const START_SERVER = () => {
 
-app.get('/', (req, res) => {
-  // Test Absolute import mapOrder
-  // eslint-disable-next-line no-console
-  console.log(mapOrder(
-    [{ id: 'id-1', name: 'One' },
-      { id: 'id-2', name: 'Two' },
-      { id: 'id-3', name: 'Three' },
-      { id: 'id-4', name: 'Four' },
-      { id: 'id-5', name: 'Five' }],
-    ['id-5', 'id-4', 'id-2', 'id-3', 'id-1'],
-    'id'
-  ))
-  res.end('<h1>Hello World!</h1><hr>')
-})
+  app.get('/', async (req, res) => {
+    res.end('<h1>Hello World!</h1><hr>')
+  })
 
-app.listen(port, hostname, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Hello NamPhuongDev, I'm running at http://${ hostname }:${ port }/`)
-})
+  app.listen(env.APP_PORT, env.APP_HOST, () => {
+    console.log(`3. Howdy ${env.AUTHOR}, backend server's running at host:${env.APP_HOST} and port:${env.APP_PORT}`)
+  })
+
+  // Thực hiện các tác vụ cleanup trước khi dừng server
+  exitHook(() => {
+    console.log('4. Server is shutting down...')
+    CLOSE_DB()
+    console.log('5. Disconnected from MongoDB CLoud Atlas')
+  })
+}
+
+// Chỉ khi connect tới DB thành công thì mới start server backend lên
+// Viết theo kiểu IIFE:
+(async () => {
+  try {
+    console.log('1. Connecting to MongoDB Cloud Atlat...')
+    await CONNECT_DB()
+    console.log('2. Connected to MongoDB Cloud Atlat')
+    START_SERVER()
+  } catch (error) {
+    console.error(error)
+    process.exit(0)
+  }
+})()
+
+// // Chỉ khi connect tới DB thành công thì mới start server backend lên
+// console.log('1. Connecting to MongoDB Cloud Atlat...')
+// CONNECT_DB()
+//   .then(() => console.log('2. Connected to MongoDB Cloud Atlat'))
+//   .then(() => START_SERVER())
+//   .catch( error => {
+//     console.error(error)
+//     process.exit(0)
+//   })
