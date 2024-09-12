@@ -15,11 +15,10 @@ const createNew = async (req, res, next) => {
 
   try {
     // cái log dưới đây để log ra data test ở postman
-    console.log(req.body)
     // thằng abortAerly:false của thằng Joi sẽ check hết tất cả các lỗi Validation chứ ko dừng lại ở thằng đầu tiên nữa.
     await correctConditon.validateAsync(req.body, { abortEarly: false })
-    // next()
-    res.status(StatusCodes.CREATED).json ({ message: 'POST from validation: API create new boards' })
+    // Validate dữ liệu hợp lệ xong thì mới cho request đi tiếp sang Controller
+    next()
   } catch (error) {
     res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
       errors: new Error(error).message
