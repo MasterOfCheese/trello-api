@@ -9,6 +9,10 @@ const app = express()
 
 const START_SERVER = () => {
 
+  // Enable req.body json data in Postman
+  app.use(express.json())
+
+  // Using API V1
   app.use('/v1', APIs_v1)
 
   app.listen(env.APP_PORT, env.APP_HOST, () => {
